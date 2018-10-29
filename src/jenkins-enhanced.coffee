@@ -9,7 +9,7 @@
 #   HUBOT_JENKINS_AUTH
 #   HUBOT_JENKINS_{1-N}_URL
 #   HUBOT_JENKINS_{1-N}_AUTH
-#
+#   HUBOT_JENKINS_ROLE
 #   Auth should be in the "user:access-token" format.
 #
 # Commands:
@@ -732,9 +732,19 @@ module.exports = (robot) ->
     pluginFactory(msg).listAliases()
 
   robot.respond /j(?:enkins)? build (.*)(, (.+))?/i, id: 'jenkins.build', (msg) ->
+    role = process.env.HUBOT_JENKINS_ROLE || "admin"
+    user = robot.brain.userForName(msg.message.user.name)
+    unless robot.auth.hasRole(user, role)
+            msg.reply "Sorry, some how I forgot what you can do!!! do you has #{role} role?"
+            return
     pluginFactory(msg).build false
 
   robot.respond /j(?:enkins)? b (\d+)(, (.+))?/i, id: 'jenkins.b', (msg) ->
+    role = process.env.HUBOT_JENKINS_ROLE || "admin"
+    user = robot.brain.userForName(msg.message.user.name)
+    unless robot.auth.hasRole(user, role)
+            msg.reply "Sorry, some how I forgot what you can do!!! do you has #{role} role?"
+            return
     pluginFactory(msg).buildById()
 
   robot.respond /j(?:enkins)? list( (.+))?/i, id: 'jenkins.list', (msg) ->
